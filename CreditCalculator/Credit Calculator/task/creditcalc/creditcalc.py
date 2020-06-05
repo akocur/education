@@ -4,7 +4,7 @@ print('What do you want to calculate?',
       'type "m" - for count of months',
       'type "p" - for monthly payment',
       sep='\n')
-answer = input('> ')
+answer = input()
 if answer == 'm':
     print('Enter monthly payment:')
     monthly_payment = int(input())

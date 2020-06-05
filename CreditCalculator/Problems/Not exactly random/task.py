@@ -1,0 +1,8 @@
+import random
+from random import randint
+
+
+# don't modify this code or variable `n` may not be available
+n = int(input())
+random.seed(n)
+print(randint(-100, 100))
