@@ -106,5 +106,5 @@ files:
         CreditCalcTest('creditcalc.creditcalc').run_tests()
   learner_created: false
 feedback_link: https://hyperskill.org/projects/90/stages/502/implement
-status: Failed
+status: Solved
 record: 3
