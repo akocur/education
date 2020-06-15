@@ -15,19 +15,38 @@ animal_index = {
     '5': (rabbit, 'rabbit')
 }
 
-the_end_message = '---\nThe end of the program. To check another habitat restart the watcher please.'
+the_end_message = 'See you!'
 
 
 class Zookeeper(StageTest):
+
     def generate(self):
-        tests = [TestCase(stdin=index, attach=(index, animal_index[index])) for index in animal_index]
+        tests = [
+            TestCase(stdin='1\nexit', attach='1\nexit'),
+            TestCase(stdin='3\nexit', attach='3\nexit'),
+            TestCase(stdin='5\nexit', attach='5\nexit'),
+            TestCase(stdin='0\n2\n4\nexit', attach='0\n2\n4\nexit'),
+            TestCase(stdin='0\n1\n2\n3\n4\n5\nexit', attach='0\n1\n2\n3\n4\n5\nexit'),
+        ]
         return tests
 
     def check(self, reply, attach):
-        if attach[1][0].strip() not in reply.strip():
-            return CheckResult.wrong(f'There should be a {attach[1][1]} in aviary number {attach[0]}')
-        if the_end_message not in reply.strip():
-            return CheckResult.wrong('You should output the message about the end of the program!')
+        indexes = list(map(str, range(6)))
+
+        included_animals = attach.replace('\nexit', '').split('\n')
+        excluded_animals = [index for index in indexes if index not in included_animals]
+
+        for index in included_animals:
+            if animal_index[index][0].strip() not in reply:
+                return CheckResult.wrong("The " + animal_index[index][1] + " wasn't printed but was expected")
+
+        for index in excluded_animals:
+            if animal_index[index][0].strip() in reply:
+                return CheckResult.wrong("The " + animal_index[index][1] + " was printed but wasn't expected")
+
+        if the_end_message not in reply:
+            return CheckResult.wrong("You should print '{}' at the end of the program".format(the_end_message))
+
         return CheckResult.correct()
 
 

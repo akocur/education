@@ -121,5 +121,9 @@ It seems there will be more rabbits soon!"""
 
 
 animals = [camel, lion, deer, goose, bat, rabbit]
-print(animals[int(input('Which habitat # do you need? > '))])
-print('---', 'The end of the program. To check another habitat restart the watcher please.', sep='\n')
+
+answer = input('Which habitat # do you need? > ')
+while not answer == 'exit':
+    print(animals[int(answer)])
+    answer = input('Which habitat # do you need? > ')
+print('See you!')
