@@ -1,6 +1,22 @@
-print('''
-I do love animals!
-Start looking after animals...
-Deer looks fine.
-Bat looks happy.
-Lion looks healthy.''')
+camel = r"""
+Switching on camera from habitat with camels...
+ ___.-''''-.
+/___  @    |
+',,,,.     |         _.'''''''._
+     '     |        /           \
+     |     \    _.-'             \
+     |      '.-'                  '-.
+     |                               ',
+     |                                '',
+      ',,-,                           ':;
+           ',,| ;,,                 ,' ;;
+              ! ; !'',,,',',,,,'!  ;   ;:
+             : ;  ! !       ! ! ;  ;   :;
+             ; ;   ! !      ! !  ; ;   ;,
+            ; ;    ! !     ! !   ; ;     
+            ; ;    ! !    ! !     ; ;
+           ;,,      !,!   !,!     ;,;
+           /_I      L_I   L_I     /_I
+Yey, our little camel is sunbathing!"""
+
+print(camel)

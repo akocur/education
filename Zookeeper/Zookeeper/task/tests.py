@@ -1,6 +1,7 @@
 from hstest.stage_test import StageTest
 from hstest.test_case import TestCase
 from hstest.check_result import CheckResult
+from animals import *
 
 CheckResult.correct = lambda: CheckResult(True, '')
 CheckResult.wrong = lambda feedback: CheckResult(False, feedback)
@@ -8,16 +9,11 @@ CheckResult.wrong = lambda feedback: CheckResult(False, feedback)
 
 class Zookeeper(StageTest):
     def generate(self):
-        return [TestCase(attach=
-                         "I do love animals!\n"
-                         "Start looking after animals...\n"
-                         "Deer looks fine.\n"
-                         "Bat looks happy.\n"
-                         "Lion looks healthy.")]
+        return [TestCase(attach=camel)]
 
     def check(self, reply, attach):
-        if attach not in reply.strip():
-            return CheckResult.wrong('Your output should be like in the example!')
+        if attach.strip() not in reply.strip():
+            return CheckResult.wrong('You should output a camel!')
         return CheckResult.correct()
 
 
