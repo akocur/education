@@ -57,5 +57,5 @@ files:
     print('What a great name you have, {your_name}!')
   learner_created: false
 feedback_link: https://hyperskill.org/projects/97/stages/535/implement
-status: Unchecked
+status: Solved
 record: -1
