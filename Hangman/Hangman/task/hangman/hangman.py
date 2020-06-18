@@ -1,7 +1,8 @@
+import random
+
+
 print('H A N G M A N')
-languages
-word = input('Guess the word: > ')
-if word == 'python':
-    print('You survived!')
-else:
-    print('You are hanged!')
+words = ('python', 'java', 'kotlin', 'javascript')
+word = random.choice(words)
+answer = input('Guess the word: > ')
+print('You survived!' if word == answer else 'You are hanged!')
