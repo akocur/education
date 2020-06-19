@@ -24,6 +24,7 @@ class CoffeeMachineTest(StageTest):
                 words = [w if randint(1, 100) < 95 else w + w for w in word * 50 + all_letters]
                 shuffle(words)
                 inputs = '\n'.join(words)
+                inputs = 'play\n' + inputs + '\nexit'
                 tests += [TestCase(stdin=inputs, attach=words)]
 
         shuffle(tests)
@@ -34,18 +35,29 @@ class CoffeeMachineTest(StageTest):
         pos = 0
         phrases = []
         while True:
-            pos1 = reply.find("letter:", pos)
+            pos1 = reply.find(":", pos)
             if pos1 == -1:
                 phrases.append(reply[pos:].strip(' '))
                 break
-            pos1 += len("letter:")
+            pos1 += len(":")
             phrases.append(reply[pos:pos1].strip(' '))
             pos = pos1
         return '\n'.join(phrases)
 
     def check(self, reply: str, attach: Any) -> CheckResult:
         # reply = self._fix_reply(reply)
-        # tries = [i.strip() for i in reply.split('\n\n') if len(i.strip())]
+        # lines = reply.splitlines()
+        # useful_lines = [i for i in reply.splitlines() if not ("play" in i and "exit" in i)]
+        #
+        # if len(lines) == len(useful_lines):
+        #     return CheckResult.wrong(
+        #         'Your output should contain at least such line, found 0: \n'
+        #         '\'Type "play" to play the game, "exit" to quit: \''
+        #     )
+        #
+        # reply = '\n'.join(useful_lines)
+        #
+        # tries = [i.strip() for i in reply.split('\n\n') if len(i.strip())][1:]
         #
         # if len(tries) == 0:
         #     return CheckResult.wrong(

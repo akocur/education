@@ -3,6 +3,7 @@ import random
 
 class Hangman:
     def __init__(self, words, lives):
+        self.original_lives = lives
         self.lives = lives
         self.words = words
         self.word = random.choice(words)
@@ -13,6 +14,7 @@ class Hangman:
 
     def __repr__(self):
         return f'''
+    self.original_lives = {self.original_lives}
     self.lives = {self.lives}
     self.words = {self.words}
     self.word = {self.word}
@@ -45,26 +47,34 @@ class Hangman:
 
     def play(self):
         print('H A N G M A N')
-
-        while self.lives > 0 and len(self.letters_of_word) > len(self.correct_letters):
-            print('', self.result, sep='\n')
-            input_letter = input('Input a letter: > ')
-
-            if self.are_errors(input_letter):
+        act = input('Type "play" to play the game, "exit" to quit: > ')
+        while not act == 'exit':
+            if not act == 'play':
+                act = input('Type "play" to play the game, "exit" to quit: > ')
                 continue
 
-            if input_letter in self.letters_of_word:
-                self.correct_letters.add(input_letter)
-                self.set_result()
-            else:
-                print('No such letter in the word')
-                self.incorrect_letters.add(input_letter)
-                self.lives -= 1
+            self.__init__(self.words, self.original_lives)
+            while self.lives > 0 and len(self.letters_of_word) > len(self.correct_letters):
+                print('', self.result, sep='\n')
+                input_letter = input('Input a letter: > ')
 
-        if self.correct_letters == self.letters_of_word:
-            print('', self.word, 'You guessed the word!', 'You survived!', sep='\n')
-        else:
-            print('You are hanged!')
+                if self.are_errors(input_letter):
+                    continue
+
+                if input_letter in self.letters_of_word:
+                    self.correct_letters.add(input_letter)
+                    self.set_result()
+                else:
+                    print('No such letter in the word')
+                    self.incorrect_letters.add(input_letter)
+                    self.lives -= 1
+
+            if self.correct_letters == self.letters_of_word:
+                print('', self.word, 'You guessed the word!', 'You survived!', sep='\n')
+            else:
+                print('You are hanged!')
+
+            act = input('\nType "play" to play the game, "exit" to quit: > ')
 
 
 game = Hangman(('python', 'java', 'kotlin', 'javascript'), 8)
