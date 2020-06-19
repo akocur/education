@@ -1,30 +1,46 @@
 import random
 
 
-def shows_result():
-    global word, input_correct_letters
+class Hangman:
+    def __init__(self, words, lives):
+        self.lives = lives
+        self.words = words
+        self.word = random.choice(words)
+        self.letters_of_word = set(self.word)
+        self.input_correct_letters = set()
+        self.result = '-' * len(self.word)
 
-    result = '\n'
-    for letter in word:
-        if letter in input_correct_letters:
-            result += letter
+    def set_result(self):
+        result = ''
+        for letter in self.word:
+            if letter in self.input_correct_letters:
+                result += letter
+            else:
+                result += '-'
+        self.result = result
+
+    def play(self):
+        print('H A N G M A N')
+
+        while self.lives > 0 and len(self.letters_of_word) > len(self.input_correct_letters):
+            print('', self.result, sep='\n')
+            input_letter = input('Input a letter: > ')
+            if input_letter in self.letters_of_word:
+                if input_letter in self.input_correct_letters:
+                    print('No improvements')
+                    self.lives -= 1
+                else:
+                    self.input_correct_letters.add(input_letter)
+            else:
+                print('No such letter in the word')
+                self.lives -= 1
+            self.set_result()
+
+        if self.input_correct_letters == self.letters_of_word:
+            print('', self.word, 'You guessed the word!', 'You survived!', sep='\n')
         else:
-            result += '-'
-    print(result)
+            print('You are hanged!')
 
 
-print('H A N G M A N')
-words = ('python', 'java', 'kotlin', 'javascript')
-word = random.choice(words)
-letters_of_word = set(word)
-input_correct_letters = set()
-
-for _i in range(8):
-    shows_result()
-    input_letter = input('Input a letter: > ')
-    if input_letter in letters_of_word:
-        input_correct_letters.add(input_letter)
-    else:
-        print('No such letter in the word')
-
-print('\nThanks for playing!', "We'll see how well you did in the next stage", sep='\n')
+game = Hangman(('python', 'java', 'kotlin', 'javascript'), 8)
+game.play()
