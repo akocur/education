@@ -2,17 +2,17 @@ from hstest.stage_test import *
 from hstest.test_case import TestCase
 from hstest.check_result import CheckResult
 
-from random import shuffle
-from string import ascii_lowercase
+from random import shuffle, randint
+from string import ascii_lowercase, ascii_letters, punctuation, digits
 
 CheckResult.correct = lambda: CheckResult(True, '')
 CheckResult.wrong = lambda feedback: CheckResult(False, feedback)
-
 
 description_list = ['python', 'java', 'kotlin', 'javascript']
 out_of_description = ['clojure', 'haskell', 'typescript', 'assembler']
 
 catch = {i: 0 for i in description_list}
+all_letters = ascii_letters + punctuation + digits
 
 
 class CoffeeMachineTest(StageTest):
@@ -21,7 +21,7 @@ class CoffeeMachineTest(StageTest):
 
         for word in description_list + out_of_description + [ascii_lowercase]:
             for i in range(100):
-                words = [w for w in word * 30]
+                words = [w if randint(1, 100) < 95 else w + w for w in word * 50 + all_letters]
                 shuffle(words)
                 inputs = '\n'.join(words)
                 tests += [TestCase(stdin=inputs, attach=words)]
@@ -71,16 +71,16 @@ class CoffeeMachineTest(StageTest):
         # is_hanged = hanged in full_blocks[-1]
         #
         # no_such_letter = 'No such letter in the word'
-        # no_improvements = 'No improvements'
+        # already_typed = 'You already typed this letter'
+        # not_ascii = 'It is not an ASCII lowercase letter'
+        # print_single = 'You should input a single letter'
         #
         # if is_hanged:
-        #     if (no_such_letter not in full_blocks[-1] and
-        #             no_improvements not in full_blocks[-1]):
-        #
+        #     if (no_such_letter not in full_blocks[-1]):
         #         return CheckResult.wrong(
         #             f'Last block contains "{hanged}" '
-        #             f'but doesn\'t contain "{no_improvements}" or '
-        #             f'"{no_such_letter}". Check the first example. These texts '
+        #             f'but doesn\'t contain "{no_such_letter}". '
+        #             f'Check the first example. These texts '
         #             f'should be within the same block. Your last block:\n\n'
         #             f'{full_blocks[-1]}'
         #         )
@@ -113,6 +113,8 @@ class CoffeeMachineTest(StageTest):
         #     )
         #
         # wrong_count = 0
+        # typed_letters = set()
+        # inputs = ''
         #
         # if is_hanged:
         #     blocks += [blocks[-1]]
@@ -121,13 +123,78 @@ class CoffeeMachineTest(StageTest):
         # for letter, prev, next, prev_full, next_full in zip(
         #         attach, blocks[0:], blocks[1:], full_blocks[0:], full_blocks[1:]):
         #
-        #     if prev == next:
-        #         wrong_count += 1
+        #     # ---
+        #     detect_not_one = len(letter) != 1
         #
+        #     if detect_not_one and print_single not in prev_full:
+        #         return CheckResult.wrong(
+        #             f'Before: {prev}\n'
+        #             f'Letter: {letter}\n'
+        #             f'After : {next}\n\n'
+        #             f'There is no \"{print_single}\" message, but should be'
+        #         )
+        #     elif not detect_not_one and print_single in prev_full:
+        #         return CheckResult.wrong(
+        #             f'Before: {prev}\n'
+        #             f'Letter: {letter}\n'
+        #             f'After : {next}\n\n'
+        #             f'There is \"{print_single}\" message, but shouldn\'t be'
+        #         )
+        #
+        #     if detect_not_one:
+        #         continue
+        #
+        #     # ---
+        #     detect_not_ascii = letter not in ascii_lowercase
+        #
+        #     if detect_not_ascii and not_ascii not in prev_full:
+        #         return CheckResult.wrong(
+        #             f'Before: {prev}\n'
+        #             f'Letter: {letter}\n'
+        #             f'After : {next}\n\n'
+        #             f'There is no \"{not_ascii}\" message, but should be'
+        #         )
+        #     elif not detect_not_ascii and not_ascii in prev_full:
+        #         return CheckResult.wrong(
+        #             f'Before: {prev}\n'
+        #             f'Letter: {letter}\n'
+        #             f'After : {next}\n\n'
+        #             f'There is \"{not_ascii}\" message, but shouldn\'t be'
+        #         )
+        #
+        #     if detect_not_ascii:
+        #         continue
+        #
+        #     inputs += '\n' + letter
+        #
+        #     # ---
+        #     detect_typed_letter = letter in typed_letters
+        #
+        #     if detect_typed_letter and already_typed not in prev_full:
+        #         return CheckResult.wrong(
+        #             f'Before: {prev}\n'
+        #             f'Letter: {letter}\n'
+        #             f'After : {next}\n\n'
+        #             f'There is no \"{already_typed}\" message, but should be\n'
+        #             f'Input letters: {inputs}'
+        #         )
+        #     elif not detect_typed_letter and already_typed in prev_full:
+        #         return CheckResult.wrong(
+        #             f'Before: {prev}\n'
+        #             f'Letter: {letter}\n'
+        #             f'After : {next}\n\n'
+        #             f'There is \"{already_typed}\" message, but shouldn\'t be'
+        #             f'Input letters: {inputs}'
+        #         )
+        #
+        #     if detect_typed_letter:
+        #         continue
+        #
+        #     # ---
         #     detect_no_such_letter = (
         #         (letter not in prev) and
         #         (letter not in next) and
-        #         (next == prev)
+        #         (next == prev) and not detect_typed_letter
         #     )
         #
         #     if detect_no_such_letter and no_such_letter not in prev_full:
@@ -145,26 +212,10 @@ class CoffeeMachineTest(StageTest):
         #             f'There is \"{no_such_letter}\" message, but shouldn\'t be'
         #         )
         #
-        #     detect_no_improvements = (
-        #         (letter in prev) and
-        #         (letter in next) and
-        #         (next == prev)
-        #     )
+        #     if detect_no_such_letter:
+        #         wrong_count += 1
         #
-        #     if detect_no_improvements and no_improvements not in prev_full:
-        #         return CheckResult.wrong(
-        #             f'Before: {prev}\n'
-        #             f'Letter: {letter}\n'
-        #             f'After : {next}\n\n'
-        #             f'There is no \"{no_improvements}\" message, but should be'
-        #         )
-        #     elif not detect_no_improvements and no_improvements in prev_full:
-        #         return CheckResult.wrong(
-        #             f'Before: {prev}\n'
-        #             f'Letter: {letter}\n'
-        #             f'After : {next}\n\n'
-        #             f'There is \"{no_improvements}\" message, but shouldn\'t be'
-        #         )
+        #     typed_letters |= {letter}
         #
         #     cond1 = (
         #         (letter not in prev) and
@@ -207,8 +258,7 @@ class CoffeeMachineTest(StageTest):
         # if is_hanged:
         #     if wrong_count != 8:
         #         return CheckResult.wrong(
-        #             f'User was hanged after {wrong_count} wrong guesses, but should after 8. '
-        #             f'Notice, that in this stage "No improvements" also counts as wrong guess.'
+        #             f'User was hanged after {wrong_count} wrong guesses, but should after 8'
         #         )
         #     else:
         #         return CheckResult.correct()
