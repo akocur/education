@@ -92,6 +92,10 @@ files:
                      i.startswith('|') and i.endswith('|')]
 
             for line in lines:
+                if len(line) != 9:
+                    raise WrongAnswerException(
+                        f"Line of Tic-Tac-Toe field should be 9 characters long\n"
+                        f"found {len(line)} characters in \"{line}\"")
                 for c in line:
                     if c not in 'XO|_ ':
                         return None
@@ -218,6 +222,15 @@ files:
     if __name__ == '__main__':
         TicTacToeTest('tictactoe.tictactoe').run_tests()
   learner_created: false
+- name: tictactoe/tictactoe.py
+  visible: true
+  text: |
+    cells = input('Enter cells: > ')
+    print('---------')
+    for i in range(3):
+        print('|', cells[i * 3 + 0], cells[i * 3 + 1], cells[i * 3 + 2], '|')
+    print('---------')
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/73/stages/401/implement
-status: Unchecked
+status: Solved
 record: -1
