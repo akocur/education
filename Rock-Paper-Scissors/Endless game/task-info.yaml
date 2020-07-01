@@ -108,5 +108,5 @@ files:
     print(f'Sorry, but computer chose {accordance[input()]}')
   learner_created: false
 feedback_link: https://hyperskill.org/projects/78/stages/433/implement
-status: Unchecked
+status: Solved
 record: -1

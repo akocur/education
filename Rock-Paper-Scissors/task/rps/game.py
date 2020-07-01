@@ -3,10 +3,11 @@ import random
 
 class RockPaperScissors:
     lose_options = {'rock': 'paper', 'paper': 'scissors', 'scissors': 'rock'}
+    instruments = ['rock', 'paper', 'scissors']
 
-    def __init__(self, user_choice):
-        self.computer_choice = random.choice(['rock', 'paper', 'scissors'])
-        self.user_choice = user_choice
+    def __init__(self):
+        self.computer_choice = None
+        self.user_choice = None
         self.status = None
 
     def set_status(self):
@@ -24,9 +25,18 @@ class RockPaperScissors:
         print(statuses[self.status])
 
     def play(self):
-        self.set_status()
-        self.prints_result()
+        self.user_choice = input().strip()
+        while not self.user_choice == '!exit':
+            if self.user_choice not in RockPaperScissors.instruments:
+                print('Invalid input')
+                self.user_choice = input().strip()
+                continue
+            self.computer_choice = random.choice(RockPaperScissors.instruments)
+            self.set_status()
+            self.prints_result()
+            self.user_choice = input().strip()
+        print('Bye!')
 
 
-game = RockPaperScissors(input())
+game = RockPaperScissors()
 game.play()
