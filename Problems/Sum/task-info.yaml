@@ -1,0 +1,16 @@
+type: code
+files:
+- name: task.py
+  visible: true
+  text: '# read sums.txt'
+  learner_created: false
+- name: sums.txt
+  visible: true
+  learner_created: true
+feedback_link: https://hyperskill.org/learn/step/8145
+status: Solved
+feedback:
+  message: <html>Correct solution<br/><br/>Continue on <a href="https://hyperskill.org/learn/step/8145">JetBrains
+    Academy</a></html>
+  time: Thu, 02 Jul 2020 15:23:32 UTC
+record: -1
