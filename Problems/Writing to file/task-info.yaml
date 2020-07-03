@@ -9,5 +9,9 @@ files:
     # what to do with the file and the string
   learner_created: false
 feedback_link: https://hyperskill.org/learn/step/8012
-status: Unchecked
+status: Solved
+feedback:
+  message: <html>Correct solution<br/><br/>Continue on <a href="https://hyperskill.org/learn/step/8012">JetBrains
+    Academy</a></html>
+  time: Fri, 03 Jul 2020 17:34:56 UTC
 record: -1

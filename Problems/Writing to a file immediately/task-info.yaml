@@ -1,0 +1,20 @@
+type: code
+files:
+- name: task.py
+  visible: true
+  text: |-
+    long_list = list(range(1000000))
+    file_name = "my_file.txt"
+    opened_file = open(file_name, 'w')
+    for _item in long_list:
+        # complete the next string to write item to my_file.txt
+        command = "print(...)"
+    opened_file.close()
+  learner_created: false
+feedback_link: https://hyperskill.org/learn/step/8013
+status: Solved
+feedback:
+  message: <html>Correct solution<br/><br/>Continue on <a href="https://hyperskill.org/learn/step/8013">JetBrains
+    Academy</a></html>
+  time: Fri, 03 Jul 2020 17:50:45 UTC
+record: -1
