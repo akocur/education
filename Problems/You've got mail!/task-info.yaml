@@ -7,19 +7,9 @@ files:
     # remember: the variable email is already defined
   learner_created: false
 feedback_link: https://hyperskill.org/learn/step/6966
-status: Failed
+status: Solved
 feedback:
-  message: |-
-    Failed test #2 of 7. Wrong answer
-
-    This is a sample test from the problem statement!
-
-    Test input:
-    john.andrew.smith@yougotmail.com
-    Correct output:
-    john.andrew.smith
-
-    Your code output:
-    someone
-  time: Sat, 04 Jul 2020 17:19:10 UTC
+  message: <html>Correct solution<br/><br/>Continue on <a href="https://hyperskill.org/learn/step/6966">JetBrains
+    Academy</a></html>
+  time: Sat, 04 Jul 2020 17:24:12 UTC
 record: -1
