@@ -2,10 +2,12 @@ import random
 
 
 class RockPaperScissors:
-    lose_options = {'rock': 'paper', 'paper': 'scissors', 'scissors': 'rock'}
-    instruments = ['rock', 'paper', 'scissors']
+    instruments = ['rock', 'fire', 'scissors', 'snake', 'human', 'tree', 'wolf', 'sponge', 'paper', 'air', 'water',
+                   'dragon', 'devil', 'lightning', 'gun']
 
     def __init__(self, rating_file_name='rating.txt'):
+        self.instruments = ['rock', 'scissors', 'paper']
+        self.losing_options = {}
         self.computer_choice = None
         self.user_choice = None
         self.status = None
@@ -21,17 +23,20 @@ class RockPaperScissors:
         self.user_name = input('Enter your name: ').strip().capitalize()
         print(f'Hello, {self.user_name}')
         self.sets_user_rating_from_file()
+        self.sets_instruments(input().split(','))
+        self.sets_losing_options()
+        print("Okay, let's start")
         self.user_choice = input().strip()
         while not self.user_choice == '!exit':
             if self.user_choice == '!rating':
                 print(f'Your rating: {self.user_rating}')
                 self.user_choice = input().strip()
                 continue
-            if self.user_choice not in RockPaperScissors.instruments:
+            if self.user_choice not in self.instruments:
                 print('Invalid input')
                 self.user_choice = input().strip()
                 continue
-            self.computer_choice = random.choice(RockPaperScissors.instruments)
+            self.computer_choice = random.choice(self.instruments)
             self.sets_status()
             self.sets_user_rating()
             self.prints_result()
@@ -55,8 +60,19 @@ class RockPaperScissors:
             file.write(f'{self.user_name} {self.user_rating}\n')
         file.close()
 
+    def sets_instruments(self, options):
+        if len(options) > 1:
+            self.instruments = [instrument for instrument in RockPaperScissors.instruments if instrument in options]
+
+    def sets_losing_options(self):
+        instruments = RockPaperScissors.instruments
+        for instrument in instruments:
+            if instrument in self.instruments:
+                index = self.instruments.index(instrument)
+                self.losing_options[instrument] = instruments[index + 8:] + instruments[max(0, index - 7):index]
+
     def sets_status(self):
-        if RockPaperScissors.lose_options[self.user_choice] == self.computer_choice:
+        if self.computer_choice in self.losing_options[self.user_choice]:
             self.status = 'lose'
         elif self.computer_choice == self.user_choice:
             self.status = 'draw'
