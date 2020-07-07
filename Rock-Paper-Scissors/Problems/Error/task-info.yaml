@@ -10,5 +10,9 @@ files:
     f.write('2020')
   learner_created: false
 feedback_link: https://hyperskill.org/learn/step/8708
-status: Unchecked
+status: Solved
+feedback:
+  message: <html>Correct solution<br/><br/>Continue on <a href="https://hyperskill.org/learn/step/8708">JetBrains
+    Academy</a></html>
+  time: Tue, 07 Jul 2020 17:26:00 UTC
 record: -1

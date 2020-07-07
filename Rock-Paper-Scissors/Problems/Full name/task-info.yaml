@@ -1,0 +1,23 @@
+type: code
+files:
+- name: task.py
+  visible: true
+  text: |-
+    f1 = open('name.txt')
+    f2 = open('surname.txt')
+    f3 = open('full_name.txt', 'w')
+
+    name = f1.read()
+    surname = f2.read()
+
+    full_name = name + ' ' + surname
+
+    f3.write(full_name)
+  learner_created: false
+feedback_link: https://hyperskill.org/learn/step/8709
+status: Solved
+feedback:
+  message: <html>Correct solution<br/><br/>Continue on <a href="https://hyperskill.org/learn/step/8709">JetBrains
+    Academy</a></html>
+  time: Tue, 07 Jul 2020 17:28:59 UTC
+record: -1
