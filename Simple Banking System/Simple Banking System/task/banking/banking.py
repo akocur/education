@@ -4,12 +4,12 @@ import random
 class CreditCard:
     BIN = 400000
     credit_cards = {}  # {card_number: self}
-    current_account_identifier = -1
+    current_account_identifier = 844943345
 
     def __init__(self):
         self.account_identifier = CreditCard.current_account_identifier + 1
         self.pin = random.randint(1000, 9999)
-        self.checksum = random.randrange(10)
+        self.checksum = self.get_checksum()
         self.balance = 0
         CreditCard.current_account_identifier += 1
         CreditCard.credit_cards[self.get_card_number()] = self
@@ -29,6 +29,20 @@ Your card PIN:
 
     def get_card_number(self):
         return str(self.BIN) + str(self.account_identifier).rjust(9, '0') + str(self.checksum)
+
+    def get_checksum(self):
+        number = str(self.BIN) + str(self.account_identifier).rjust(9, '0')
+        digits = []
+        for i in range(len(number)):
+            x = int(number[i])
+            if i % 2:
+                digits.append(x)  # because i begin with 0
+            else:
+                if 2 * x > 9:
+                    digits.append(2 * x - 9)
+                else:
+                    digits.append((2 * x))
+        return (10 - sum(digits) % 10) % 10
 
     @staticmethod
     def get_credit_card(number):
