@@ -19,7 +19,7 @@ conn = sqlite3.connect('example.s3db')</code></pre>
 cur.execute('SOME SQL QUERY')
 
 # After doing some changes in DB don't forget to commit them!
-cur.commit()</code></pre>
+conn.commit()</code></pre>
 
 <p>To get data returned by SELECT query you can user <code class="language-java">fetchone()</code>, <code class="language-java">fetchall()</code> methods:</p>
 

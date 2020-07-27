@@ -119,12 +119,19 @@ files:
         return sum(luhn) % 10 == 0
 
 
-    def test_luhn_algorithm(output: str, value_to_return):
+    def test_luhn_algorithm(output: str, correct_num_of_cards):
         global are_all_inputs_read
 
-        numbers = re.findall(r'400000\d{10}', output, re.MULTILINE)
+        numbers = re.findall(r'400000\d{10,}', output, re.MULTILINE)
+
+        if len(numbers) != correct_num_of_cards:
+            return CheckResult.wrong(
+                f'After creating {correct_num_of_cards} cards, found {len(numbers)} cards with correct format\n'
+                f'The card number should be 16-digit length and should start with 400000.')
 
         for number in numbers:
+            if len(number) != 16:
+                return CheckResult.wrong(f'Wrong card number \'{number}\'. The card number should be 16-digit length.')
             if not is_passed_luhn_algorithm(number):
                 return CheckResult.wrong('The card number \'{}\' doesn\'t pass luhn algorithm!'.format(number))
 
@@ -173,11 +180,19 @@ files:
 
 
     def check_db_rows(output: str, value_to_return):
-        numbers = re.findall(r'400000\d{10}', output, re.MULTILINE)
+        correct_num_of_cards = 10
+        numbers = re.findall(r'400000\d{10,}', output, re.MULTILINE)
+
+        if len(numbers) != correct_num_of_cards:
+            return CheckResult.wrong(
+                f'After creating {correct_num_of_cards} cards, found {len(numbers)} cards with correct format\n'
+                f'The card number should be 16-digit length and should start with 400000.')
 
         with sqlite3.connect(db_file_name) as db:
             rows = db.execute('SELECT * FROM card').fetchall()
             for number in numbers:
+                if len(number) != 16:
+                    return CheckResult.wrong(f'Wrong card number \'{number}\'. The card number should be 16-digit length.')
                 is_found = False
                 for row in rows:
                     if number in row:
@@ -202,6 +217,9 @@ files:
         expected_balance = 10000
         with sqlite3.connect(db_file_name) as db:
             result = db.execute('SELECT * FROM card WHERE number = {}'.format(card_number)).fetchone()
+            if not result:
+                return CheckResult.wrong(f'Can\' find card number \'{card_number}\' in the database!\n'
+                                         f'Make sure you commit your DB changes right after saving a new card in the database!')
             balance = result[3]
             if balance != expected_balance:
                 return CheckResult.wrong(
@@ -214,6 +232,9 @@ files:
         expected_balance = 25000
         with sqlite3.connect(db_file_name) as db:
             result = db.execute('SELECT * FROM card WHERE number = {}'.format(card_number)).fetchone()
+            if not result:
+                return CheckResult.wrong(f'Can\' find card number \'{card_number}\' in the database!\n'
+                                         f'Make sure you commit your DB changes right after saving a new card in the database!')
             balance = result[3]
             if balance != expected_balance:
                 return CheckResult.wrong(
@@ -261,7 +282,13 @@ files:
         global card_number, second_card_number, are_all_inputs_read
         with sqlite3.connect(db_file_name) as db:
             first = db.execute('SELECT * FROM card WHERE number = {}'.format(card_number)).fetchone()
+            if not first:
+                return CheckResult.wrong(f'Can\' find card number \'{first}\' in the database!\n'
+                                         f'Make sure you commit your DB changes right after saving a new card in the database!')
             second = db.execute('SELECT * FROM card WHERE number = {}'.format(second_card_number)).fetchone()
+            if not second:
+                return CheckResult.wrong(f'Can\' find card number \'{second}\' in the database!\n'
+                                         f'Make sure you commit your DB changes right after saving a new card in the database!')
             first_balance = first[3]
             second_balance = second[3]
             if first_balance != 10000:
@@ -305,6 +332,11 @@ files:
                         lambda output: test_difference_between_generations(output, '0')
                     ]),
                 TestCase(
+                    stdin=[
+                        '1\n1\n1\n1\n1\n1\n1\n1',
+                        lambda output: test_luhn_algorithm(output, 8),
+                    ]),
+                TestCase(
                     stdin='1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n0',
                     check_function=check_db_rows
                 ),
@@ -328,11 +360,6 @@ files:
                         lambda output: test_card_generation(output, '2'),
                         lambda output: test_sign_in_with_wrong_card_number(output, None),
                         lambda output: test_output_after_wrong_card_number(output, '0')
-                    ]),
-                TestCase(
-                    stdin=[
-                        '1\n1\n1\n1\n1\n1\n1\n1',
-                        lambda output: test_luhn_algorithm(output, '0'),
                     ]),
                 TestCase(
                     stdin=[
