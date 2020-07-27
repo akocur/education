@@ -7,9 +7,9 @@ class CreditCard:
 
     def __init__(self, sqlite3_connect=sqlite3.connect(':memory:'), number=None, pin=None, balance=0):
         self.sqlite3_connect = sqlite3_connect
-        self.number = CreditCard.get_last_number(sqlite3_connect) + 1 if number is None else number
-        self.pin = random.randint(1000, 9999) if pin is None else pin
-        self.checksum = self.get_checksum()
+        self.number = None if number is None else int(number[len(str(CreditCard.BIN)):-1])
+        self.pin = pin
+        self.checksum = None if number is None else int(number[-1])
         self.balance = balance
 
     def __str__(self):
@@ -18,27 +18,26 @@ class CreditCard:
 Your card PIN:
 {self.pin}'''
 
-    @staticmethod
-    def is_exist(sqlite3_connect, number, pin):
-        cursor = sqlite3_connect.cursor()
-        cursor.execute('''
-            SELECT
-                id
-            FROM 
-                card
-            WHERE
-                number = ? AND pin = ?
-            ''', (number, pin))
-        sqlite3_connect.commit()
-        row = cursor.fetchone()
+    def delete(self):
+        cursor = self.sqlite3_connect.cursor()
+        cursor.execute('DELETE FROM card WHERE number = ?', (self.get_card_number(),))
+        self.sqlite3_connect.commit()
         cursor.close()
-        return False if row is None else True
+        self.number = None
+        self.pin = None
+        self.checksum = None
+        self.balance = 0
+
+    def generate(self):
+        self.number = CreditCard.get_last_number(self.sqlite3_connect) + 1
+        self.pin = random.randint(1000, 9999)
+        self.checksum = CreditCard.evaluates_checksum(str(self.BIN) + str(self.number).rjust(9, '0'))
 
     def get_card_number(self):
         return str(self.BIN) + str(self.number).rjust(9, '0') + str(self.checksum)
 
-    def get_checksum(self):
-        number = str(self.BIN) + str(self.number).rjust(9, '0')
+    @staticmethod
+    def evaluates_checksum(number):
         digits = []
         for i in range(len(number)):
             x = int(number[i])
@@ -69,7 +68,7 @@ Your card PIN:
         cursor.close()
         if row is None:
             return None
-        return CreditCard(sqlite3_connect, int(str(row[0])[len(str(CreditCard.BIN)):-1]), int(row[1]), row[2])
+        return CreditCard(sqlite3_connect, row[0], int(row[1]), row[2])
 
     @staticmethod
     def get_last_number(sqlite3_connect):
@@ -86,22 +85,38 @@ Your card PIN:
         cursor.close()
         return -1 if row is None else int(str(row[0])[len(str(CreditCard.BIN)):-1])
 
-    def saves_in_database(self):
-        cursor = self.sqlite3_connect.cursor()
-        cursor.execute('''
-            SELECT
-                id
-            FROM
-                card
-            WHERE
-                number = ?
-            ''', (int(self.get_card_number()),))
-        row = cursor.fetchone()
-        if row is None:
+    @staticmethod
+    def is_exist(sqlite3_connect, number, pin=None):
+        cursor = sqlite3_connect.cursor()
+        if pin is None:
             cursor.execute('''
-                INSERT INTO card (number, pin, balance)
-                VALUES(?, ?, ?)''', (self.get_card_number(), self.pin, self.balance))
+                SELECT
+                    id
+                FROM 
+                    card
+                WHERE
+                    number = ?
+                ''', (number,))
         else:
+            cursor.execute('''
+                SELECT
+                    id
+                FROM 
+                    card
+                WHERE
+                    number = ? AND pin = ?
+                ''', (number, pin))
+        sqlite3_connect.commit()
+        row = cursor.fetchone()
+        cursor.close()
+        return False if row is None else True
+
+    def is_checksum_correct(self):
+        return CreditCard.evaluates_checksum(str(self.BIN) + str(self.number).rjust(9, '0')) == self.checksum
+
+    def saves_in_database(self, commit=True):
+        cursor = self.sqlite3_connect.cursor()
+        if CreditCard.is_exist(self.sqlite3_connect, self.get_card_number()):
             cursor.execute('''
                 UPDATE card
                 SET                 
@@ -110,8 +125,22 @@ Your card PIN:
                 WHERE
                     number = ?
                 ''', (self.pin, self.balance, self.get_card_number()))
-        self.sqlite3_connect.commit()
+        else:
+            cursor.execute('''
+                INSERT INTO card (number, pin, balance)
+                VALUES(?, ?, ?)''', (self.get_card_number(), self.pin, self.balance))
+
+        if commit:
+            self.sqlite3_connect.commit()
         cursor.close()
+
+    def transfer(self, other_card, amount):
+        self.balance -= amount
+        other_card.balance += amount
+        # begin transaction
+        self.saves_in_database(False)
+        other_card.saves_in_database(True)
+        # end transaction
 
 
 class Menu:
@@ -122,7 +151,10 @@ class Menu:
                      }
 
         log_into_account_menu = {'1': ['1. Balance', self.balance],
-                                 '2': ['2. Log out', self.log_out],
+                                 '2': ['2. Add income', self.add_income],
+                                 '3': ['3. Do transfer', self.do_transfer],
+                                 '4': ['4. Close account', self.close_account],
+                                 '5': ['5. Log out', self.log_out],
                                  '0': ['0. Exit', None],
                                  }
 
@@ -131,16 +163,47 @@ class Menu:
         self.account = None
         self.sqlite3_connect = sqlite3_connect
 
+    def add_income(self):
+        self.account.balance += int(input('\nEnter income:\n'))
+        self.account.saves_in_database()
+        print('Income was added!')
+
     def balance(self):
         print(f'\nBalance: {self.account.balance}')
 
+    def close_account(self):
+        self.account.delete()
+        self.account = None
+        print('\nThe account has been closed!')
+
     def create_account(self):
         credit_card = CreditCard(self.sqlite3_connect)
+        credit_card.generate()
         credit_card.saves_in_database()
         print('\nYour card has been created', credit_card, sep='\n')
 
+    def do_transfer(self):
+        print('\nTransfer')
+        number = input('Enter card number:\n').strip()
+        other_card = CreditCard.get_credit_card(self.sqlite3_connect, number)
+        if other_card is None:
+            if number[-1] == str(CreditCard.evaluates_checksum(number[:-1])):
+                print('Such a card does not exist.')
+            else:
+                print('Probably you made mistake in the card number. Please try again!')
+            return
+        if self.account.get_card_number() == other_card.get_card_number():
+            print("You can't transfer money to the same account!")
+            return
+        money = float(input('Enter how much money you want to transfer:\n'))
+        if self.account.balance < money:
+            print('Not enough money!')
+            return
+        self.account.transfer(other_card, money)
+        print('Success!')
+
     def log_into_account(self):
-        print('Enter your card number:')
+        print('\nEnter your card number:')
         number = input()
         print('Enter your PIN:')
         pin = input()
