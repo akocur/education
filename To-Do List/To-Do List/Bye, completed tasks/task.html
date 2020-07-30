@@ -9,10 +9,10 @@
 <pre><code class="language-python">from datetime import datetime
 
 # delete all rows where date column equals today's date
-session.query(Table).filter(Table.date == datetime.today()).delete()
+session.query(Table).filter(Table.date == datetime.today().date()).delete()
 
 # delete a specific row
-rows = session.query(Table).filter(Table.date &lt; datetime.today()).all()
+rows = session.query(Table).filter(Table.date &lt; datetime.today().date()).all()
 specific_row = rows[0] # in case rows is not empty
 session.delete(specific_row)
 
@@ -61,7 +61,7 @@ Missed tasks:
 0) Exit
 &gt; 6
 
-Chose the number of the task you want to delete:
+Choose the number of the task you want to delete:
 1. Learn the for-loop. 19 Apr
 2. Learn the basics of SQL. 29 Apr
 &gt; 1

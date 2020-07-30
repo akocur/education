@@ -92,7 +92,8 @@ files:
             if menu in reply.lower():
                 return CheckResult.correct()
             else:
-                return CheckResult.wrong('Your program doesn\'t show the menu from example')
+                return CheckResult.wrong('Your program doesn\'t show the menu from example\n '
+                                         ' Make sure you didn\'t print any extra spaces')
 
         def check_db_file(self, reply, attach):
             if not os.path.exists('todo.db'):
@@ -186,8 +187,8 @@ files:
             second_date_weekday = weekdays[second_date.weekday()]
             last_date_weekday = weekdays[last_date.weekday()]
 
-            blocks = output.strip().split('\n\n')[:-1]
-            if len(blocks) != 7:
+            blocks = output.strip().split('\n\n')
+            if len(blocks) < 7:
                 return CheckResult.wrong('There is should be 7 days when you output the week\'s task.\n'
                                          'Make sure that you print empty lines before and after output and between each day')
 

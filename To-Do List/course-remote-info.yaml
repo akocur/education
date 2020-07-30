@@ -73,12 +73,6 @@ topics:
   - title: Functional decomposition
     theory_id: 9571
   1:
-  - title: Introduction to OOP
-    theory_id: 3614
-  - title: Inheritance
-    theory_id: 9844
-  - title: Data and object mapping
-    theory_id: 8262
   - title: What is SQL
     theory_id: 7054
   - title: Basic data types
@@ -93,6 +87,12 @@ topics:
     theory_id: 7907
   - title: Basic INSERT statement
     theory_id: 9059
+  - title: Introduction to OOP
+    theory_id: 3614
+  - title: Inheritance
+    theory_id: 9844
+  - title: Data and object mapping
+    theory_id: 8262
   - title: Object-Relational Mapping(ORM)
     theory_id: 8312
   - title: IDE

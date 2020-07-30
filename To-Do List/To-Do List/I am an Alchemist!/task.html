@@ -37,7 +37,7 @@ class Table(Base):
 	<li><code class="language-python">__tablename__</code> specifies the table name in the database.</li>
 	<li><code class="language-python">id</code> is an integer column of the table; <code class="language-python">primary_key=True</code> says that this column is the primary key.</li>
 	<li><code class="language-python">string_field</code> is a string column; <code class="language-python">default='default_value'</code> says that the default value of this column is <code class="language-python">'default_value'</code>.</li>
-	<li><code class="language-python">date_field</code> is a column that stores the date. SQLAlchmey automatically converts SQL <code class="language-python">date</code> into a Python <code class="language-python">datetime</code> object.</li>
+	<li><code class="language-python">date_field</code> is a column that stores the date. SQLAlchmey automatically converts the SQL <code class="language-python">date</code> into a Python <code class="language-python">datetime</code> object.</li>
 	<li><code class="language-python">__repr__</code> method returns a string representation of the class object. In the ORM concept, each row in the table is an object of a class.</li>
 </ul>
 

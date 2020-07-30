@@ -28,7 +28,7 @@ day_after_tomorrow = today + timedelta(days=2)</code></pre>
 <pre><code class="language-python">from datetime import datetime
 
 today = datetime.today()
-rows = session.query(Table).filter(Table.date == today).all()</code></pre>
+rows = session.query(Table).filter(Table.date == today.date()).all()</code></pre>
 
 <p>In the code snippet above, we selected all rows from <code class="language-python">Table</code> where the date column equals today's date.</p>
 
