@@ -16,5 +16,9 @@ files:
     # create an instance of Tesla
   learner_created: false
 feedback_link: https://hyperskill.org/learn/step/7240
-status: Unchecked
+status: Solved
+feedback:
+  message: <html>Correct solution<br/><br/>Continue on <a href="https://hyperskill.org/learn/step/7240">JetBrains
+    Academy</a></html>
+  time: Thu, 30 Jul 2020 15:17:20 UTC
 record: -1
