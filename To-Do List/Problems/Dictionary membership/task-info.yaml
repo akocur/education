@@ -1,0 +1,18 @@
+type: code
+files:
+- name: task.py
+  visible: true
+  text: |-
+    sidekicks = {'Don Quixote': 'Sancho Panza', 'Batman': 'Robin', 'Holmes': 'Watson'}
+    print('Sancho Panza' ... sidekicks)
+    print('Batman' ... sidekicks)
+    print('Han Solo' ... sidekicks)
+    print('' ... sidekicks)
+  learner_created: false
+feedback_link: https://hyperskill.org/learn/step/8834
+status: Failed
+feedback:
+  message: |
+    Failed. Wrong answer
+  time: Fri, 31 Jul 2020 15:26:42 UTC
+record: -1
