@@ -10,9 +10,9 @@ files:
     print('' ... sidekicks)
   learner_created: false
 feedback_link: https://hyperskill.org/learn/step/8834
-status: Failed
+status: Solved
 feedback:
-  message: |
-    Failed. Wrong answer
-  time: Fri, 31 Jul 2020 15:26:42 UTC
+  message: <html>Correct solution<br/><br/>Continue on <a href="https://hyperskill.org/learn/step/8834">JetBrains
+    Academy</a></html>
+  time: Fri, 31 Jul 2020 15:27:28 UTC
 record: -1
