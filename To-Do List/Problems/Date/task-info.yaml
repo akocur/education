@@ -1,0 +1,11 @@
+type: code
+files:
+- name: task.py
+  visible: true
+  text: |-
+    # some_date has been defined
+    # print its date part
+  learner_created: false
+feedback_link: https://hyperskill.org/learn/step/7330
+status: Unchecked
+record: -1
