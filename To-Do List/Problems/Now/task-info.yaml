@@ -8,5 +8,9 @@ files:
     # create now_time here
   learner_created: false
 feedback_link: https://hyperskill.org/learn/step/7329
-status: Unchecked
+status: Solved
+feedback:
+  message: <html>Correct solution<br/><br/>Continue on <a href="https://hyperskill.org/learn/step/7329">JetBrains
+    Academy</a></html>
+  time: Sat, 01 Aug 2020 15:52:03 UTC
 record: -1
