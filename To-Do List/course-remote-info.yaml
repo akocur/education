@@ -73,16 +73,16 @@ topics:
   - title: Functional decomposition
     theory_id: 9571
   1:
-  - title: Basic SELECT statement
-    theory_id: 7392
-  - title: The NULL value
-    theory_id: 7907
+  - title: Files
+    theory_id: 6989
   - title: Introduction to OOP
     theory_id: 3614
   - title: Inheritance
     theory_id: 9844
   - title: Data and object mapping
     theory_id: 8262
+  - title: Introduction to databases
+    theory_id: 8497
   - title: What is SQL
     theory_id: 7054
   - title: Basic data types
@@ -91,6 +91,10 @@ topics:
     theory_id: 7400
   - title: Expressions
     theory_id: 7409
+  - title: Basic SELECT statement
+    theory_id: 7392
+  - title: The NULL value
+    theory_id: 7907
   - title: Object-Relational Mapping(ORM)
     theory_id: 8312
   - title: IDE
