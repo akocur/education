@@ -25,7 +25,9 @@ class Menu:
         main_menu = {'1': ["\n1) Today's tasks", self.show_today_tasks],
                      '2': ["2) Week's tasks", self.show_week_tasks],
                      '3': ['3) All tasks', self.show_all_tasks],
-                     '4': ['4) Add task', self.add_task],
+                     '4': ['4) Missed tasks', self.show_missed_tasks],
+                     '5': ['5) Add task', self.add_task],
+                     '6': ['6) Delete task', self.delete_task],
                      '0': ['0) Exit']}
 
         self.menu = [main_menu]
@@ -39,6 +41,14 @@ class Menu:
         self.session.add(new_task)
         self.session.commit()
         print('The task has been added!')
+
+    def delete_task(self):
+        tasks = self.session.query(Task).order_by(Task.deadline).all()
+        self.show_tasks('Choose the number of the task you want to delete', tasks, True)
+        answer = int(input()) - 1
+        self.session.delete(tasks[answer])
+        self.session.commit()
+        print('The task has been deleted!')
 
     def show(self):
         self.show_current_menu()
@@ -59,6 +69,11 @@ class Menu:
     def show_current_menu(self):
         for item in self.current_menu.values():
             print(item[0])
+
+    def show_missed_tasks(self):
+        today = datetime.today().date()
+        tasks = self.session.query(Task).filter(Task.deadline < today).order_by(Task.deadline).all()
+        self.show_tasks('Missed tasks', tasks, True)
 
     @staticmethod
     def show_tasks(title, tasks, show_date_near=False):
