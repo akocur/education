@@ -14,6 +14,14 @@ class Matrix:
                             for i in range(self.number_of_rows)]
         return new_matrix
 
+    def __mul__(self, other):
+        new_matrix = None
+        if isinstance(other, int) or isinstance(other, float):
+            new_matrix = Matrix(self.number_of_rows, self.number_of_columns)
+            new_matrix.table = [[self.table[i][j] * other for j in range(self.number_of_columns)]
+                                for i in range(self.number_of_rows)]
+        return new_matrix
+
     def __str__(self):
         s = '\n'
         for row in self.table:
@@ -28,7 +36,5 @@ class Matrix:
 
 A = Matrix(*input().split())
 A.read()
-B = Matrix(*input().split())
-B.read()
-C = A + B
-print('ERROR' if C is None else C)
+B = A * int(input())
+print(B)
