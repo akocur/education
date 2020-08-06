@@ -1,11 +1,6 @@
 type: edu
 custom_name: stage3
 files:
-- name: processor/processor.py
-  visible: true
-  text: |
-    print('Hello, World!')
-  learner_created: false
 - name: tests.py
   visible: false
   text: |
@@ -278,6 +273,15 @@ files:
     if __name__ == '__main__':
         CalcTest("processor.processor").run_tests()
   learner_created: false
+- name: processor/processor.py
+  visible: true
+  text: |
+    print('Hello, World!')
+  learner_created: false
 feedback_link: https://hyperskill.org/projects/96/stages/530/implement
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations! Continue on <a href="https://hyperskill.org/projects/96/stages/530/implement">JetBrains
+    Academy</a>
+  time: Thu, 06 Aug 2020 18:37:29 UTC
 record: -1
