@@ -45,15 +45,49 @@ class Matrix:
         self.table = [[float(x) if x.count('.') else int(x) for x in input().split()[:self.number_of_columns]]
                       for _i in range(self.number_of_rows)]
 
+    def transpose_horizontal_line(self):
+        matrix = Matrix(self.number_of_rows, self.number_of_columns)
+        matrix.table = [self.table[-i] for i in range(1, self.number_of_rows + 1)]
+        return matrix
+
+    def transpose_main_diagonal(self):
+        matrix = Matrix(self.number_of_columns, self.number_of_rows)
+        matrix.table = [[self.table[m][n] for m in range(self.number_of_rows)] for n in range(self.number_of_columns)]
+        return matrix
+
+    def transpose_vertical_line(self):
+        matrix = Matrix(self.number_of_rows, self.number_of_columns)
+        matrix.table = [[row[-i] for i in range(1, len(row) + 1)] for row in self.table]
+        return matrix
+
+    def transpose_side_diagonal(self):
+        matrix = Matrix(self.number_of_columns, self.number_of_rows)
+        matrix.table = [[self.table[-m][-n] for m in range(1, self.number_of_rows + 1)]
+                        for n in range(1, self.number_of_columns + 1)]
+        return matrix
+
 
 class Menu:
     def __init__(self):
-        self.menu = {
+
+        main_menu = {
             '1': ['\n1. Add matrices', self.add_matrices],
             '2': ['2. Multiply matrix by a constant', self.multiply_matrix_by_constant],
             '3': ['3. Multiply matrices', self.multiply_matrices],
+            '4': ['4. Transpose matrix', self.print_transpose_matrix_menu],
             '0': ['0. Exit', None],
         }
+
+        transpose_matrix_menu = {
+            '1': ['\n1. Main diagonal', self.transpose_main_diagonal],
+            '2': ['2. Side diagonal', self.transpose_side_diagonal],
+            '3': ['3. Vertical line', self.transpose_vertical_line],
+            '4': ['4. Horizontal line', self.transpose_horizontal_line],
+            '0': ['0. Exit', None],
+        }
+
+        self.menu = (main_menu, transpose_matrix_menu)
+        self.current_menu = self.menu[0]
 
     @staticmethod
     def add_matrices():
@@ -82,27 +116,54 @@ class Menu:
         const = float(const) if const.count('.') else int(const)
         Menu.print_result(matrix * const)
 
-    def print_menu(self):
-        menu = tuple(self.menu.values())
+    def print_current_menu(self):
+        menu = tuple(self.current_menu.values())
         for item in menu:
             print(item[0])
         return input('Your choice: > ')
 
     @staticmethod
     def print_result(result=None):
-        print('The operation cannot be performed.' if result is None else 'The result is:\n', result)
+        print('The operation cannot be performed.' if result is None else f'The result is:\n{result}')
+
+    def print_transpose_matrix_menu(self):
+        self.current_menu = self.menu[1]
 
     def run(self):
-        answer = self.print_menu()
+        answer = self.print_current_menu()
         while not answer == '0':
-            item = self.menu.get(answer, None)
+            item = self.current_menu.get(answer, None)
             if item is None:
                 print('There is no such item\n')
-                answer = self.print_menu()
+                answer = self.print_current_menu()
                 continue
             function = item[1]
             function()
-            answer = self.print_menu()
+            answer = self.print_current_menu()
+
+    def transpose_matrix(function):
+        def wrapper(self):
+            matrix = Menu.create_matrix()
+            Menu.print_result(function(self, matrix))
+            self.current_menu = self.menu[0]
+
+        return wrapper
+
+    @transpose_matrix
+    def transpose_horizontal_line(self, matrix):
+        return matrix.transpose_horizontal_line()
+
+    @transpose_matrix
+    def transpose_main_diagonal(self, matrix):
+        return matrix.transpose_main_diagonal()
+
+    @transpose_matrix
+    def transpose_vertical_line(self, matrix):
+        return matrix.transpose_vertical_line()
+
+    @transpose_matrix
+    def transpose_side_diagonal(self, matrix):
+        return matrix.transpose_side_diagonal()
 
 
 Menu().run()
