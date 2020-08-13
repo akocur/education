@@ -1,3 +1,6 @@
+from fractions import Fraction
+
+
 class Matrix:
     def __init__(self, number_of_rows, number_of_columns):
         self.number_of_rows = int(number_of_rows)
@@ -17,7 +20,7 @@ class Matrix:
 
     def __mul__(self, other):
         matrix = None
-        if isinstance(other, int) or isinstance(other, float):
+        if isinstance(other, int) or isinstance(other, float) or isinstance(other, Fraction):
             matrix = Matrix(self.number_of_rows, self.number_of_columns)
             matrix.table = [[self.table[i][j] * other for j in range(self.number_of_columns)]
                             for i in range(self.number_of_rows)]
@@ -35,11 +38,14 @@ class Matrix:
         return matrix
 
     def __str__(self):
+        max_len_column = [max(len(str(self.table[i][j])) for i in range(self.number_of_rows))
+                          for j in range(self.number_of_columns)]
+        column_splitter = ' '
         s = ''
-        for row in self.table:
-            for x in row:
-                s += str(x) + ' '
-            s = s[:-1] + '\n'
+        for i in range(self.number_of_rows):
+            for j in range(self.number_of_columns):
+                s += str(self.table[i][j]).rjust(max_len_column[j]) + column_splitter
+            s = s[:-len(column_splitter)] + '\n'
         return s
 
     def get_determinant(self):
@@ -71,6 +77,16 @@ class Matrix:
         new_table = [[table[i_][j_] for j_ in range(len(table[i_])) if not j_ == j]
                      for i_ in range(len(table)) if not i_ == i]
         return Matrix.calculate_determinant(new_table)
+
+    def inverse_matrix(self):
+        det = self.get_determinant()
+        if not det:
+            return None
+        C = Matrix(self.number_of_rows, self.number_of_columns)
+        C.table = [[Matrix.get_cofactor(self.table, i, j) for j in range(self.number_of_columns)]
+                   for i in range(self.number_of_rows)]
+        C = C.transpose_main_diagonal()
+        return C * Fraction(1, det)
 
     def read(self):
         self.table = [[float(x) if x.count('.') else int(x) for x in input().split()[:self.number_of_columns]]
@@ -107,6 +123,7 @@ class Menu:
             '3': ['3. Multiply matrices', self.multiply_matrices],
             '4': ['4. Transpose matrix', self.print_transpose_matrix_menu],
             '5': ['5. Calculate a determinant', self.calculate_determinant],
+            '6': ['6. Inverse matrix', self.inverse_matrix],
             '0': ['0. Exit', None],
         }
 
@@ -125,12 +142,12 @@ class Menu:
     def add_matrices():
         first_matrix = Menu.create_matrix('first')
         second_matrix = Menu.create_matrix('second')
-        Menu.print_result(first_matrix + second_matrix)
+        Menu.print_result(result=first_matrix + second_matrix)
 
     @staticmethod
     def calculate_determinant():
         matrix = Menu.create_matrix()
-        Menu.print_result(matrix.get_determinant())
+        Menu.print_result(result=matrix.get_determinant())
 
     @staticmethod
     def create_matrix(number=''):
@@ -141,17 +158,22 @@ class Menu:
         return matrix
 
     @staticmethod
+    def inverse_matrix():
+        matrix = Menu.create_matrix()
+        Menu.print_result(err_message="This matrix doesn't have an inverse.", result=matrix.inverse_matrix())
+
+    @staticmethod
     def multiply_matrices():
         first_matrix = Menu.create_matrix('first')
         second_matrix = Menu.create_matrix('second')
-        Menu.print_result(first_matrix * second_matrix)
+        Menu.print_result(result=first_matrix * second_matrix)
 
     @staticmethod
     def multiply_matrix_by_constant():
         matrix = Menu.create_matrix()
         const = input('Enter constant: > ')
         const = float(const) if const.count('.') else int(const)
-        Menu.print_result(matrix * const)
+        Menu.print_result(result=matrix * const)
 
     def print_current_menu(self):
         menu = tuple(self.current_menu.values())
@@ -160,8 +182,8 @@ class Menu:
         return input('Your choice: > ')
 
     @staticmethod
-    def print_result(result=None):
-        print('The operation cannot be performed.' if result is None else f'The result is:\n{result}')
+    def print_result(err_message='The operation cannot be performed.', result=None):
+        print(err_message if result is None else f'The result is:\n{result}')
 
     def print_transpose_matrix_menu(self):
         self.current_menu = self.menu[1]
@@ -181,7 +203,7 @@ class Menu:
     def transpose_matrix(function):
         def wrapper(self):
             matrix = Menu.create_matrix()
-            Menu.print_result(function(self, matrix))
+            Menu.print_result(result=function(self, matrix))
             self.current_menu = self.menu[0]
 
         return wrapper
