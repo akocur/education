@@ -3,6 +3,7 @@ class Matrix:
         self.number_of_rows = int(number_of_rows)
         self.number_of_columns = int(number_of_columns)
         self.table = None
+        self.determinant = None
 
     def __add__(self, other):
         if not (type(other) == type(self) and
@@ -41,6 +42,36 @@ class Matrix:
             s = s[:-1] + '\n'
         return s
 
+    def get_determinant(self):
+        if self.determinant is None:
+            self.determinant = Matrix.calculate_determinant(self.table)
+        return self.determinant
+
+    @staticmethod
+    def calculate_determinant(table):
+        if not table:
+            return None
+        if not len(table) == len(table[0]):
+            return None
+        if len(table) == 1:
+            return table[0][0]
+        i = 0
+        return sum(table[i][j] * Matrix.get_cofactor(table, i, j) for j in range(len(table)))
+
+    @staticmethod
+    def get_cofactor(table, i, j):
+        return -Matrix.get_minor(table, i, j) if (i + j) % 2 else Matrix.get_minor(table, i, j)
+
+    @staticmethod
+    def get_minor(table, i, j):
+        if len(table) == 0:
+            return None
+        if len(table) == 1:
+            return table[0][0]
+        new_table = [[table[i_][j_] for j_ in range(len(table[i_])) if not j_ == j]
+                     for i_ in range(len(table)) if not i_ == i]
+        return Matrix.calculate_determinant(new_table)
+
     def read(self):
         self.table = [[float(x) if x.count('.') else int(x) for x in input().split()[:self.number_of_columns]]
                       for _i in range(self.number_of_rows)]
@@ -75,6 +106,7 @@ class Menu:
             '2': ['2. Multiply matrix by a constant', self.multiply_matrix_by_constant],
             '3': ['3. Multiply matrices', self.multiply_matrices],
             '4': ['4. Transpose matrix', self.print_transpose_matrix_menu],
+            '5': ['5. Calculate a determinant', self.calculate_determinant],
             '0': ['0. Exit', None],
         }
 
@@ -94,6 +126,11 @@ class Menu:
         first_matrix = Menu.create_matrix('first')
         second_matrix = Menu.create_matrix('second')
         Menu.print_result(first_matrix + second_matrix)
+
+    @staticmethod
+    def calculate_determinant():
+        matrix = Menu.create_matrix()
+        Menu.print_result(matrix.get_determinant())
 
     @staticmethod
     def create_matrix(number=''):
