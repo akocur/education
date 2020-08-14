@@ -1,3 +1,6 @@
+import argparse
+import os
+
 
 nytimes_com = '''
 This New Liquid Is Magnetic, and Mesmerizing
@@ -34,7 +37,46 @@ Twitter and Square Chief Executive Officer Jack Dorsey
  Tuesday, a signal of the strong ties between the Silicon Valley giants.
 '''
 
-url = input()
-while not url == 'exit':
-    print(vars()[url.replace('.', '_')])
-    url = input()
+
+def get_short_url(url):
+    dot_position = url.rfind('.')
+    return url if dot_position == -1 else url[:dot_position]
+
+
+def is_url_correct(url, folder):
+    return is_url_exist(url) or os.path.exists(folder + url)
+
+
+def is_url_exist(url):
+    return url in ('bloomberg.com', 'nytimes.com')
+
+
+def print_tab(url, folder):
+    with open(folder + get_short_url(url)) as tab:
+        print(tab.read())
+
+
+def save_tab(url, folder):
+    if not is_url_exist(url):
+        return
+    tab = globals()[url.replace('.', '_')]
+    with open(folder + get_short_url(url), 'w') as file:
+        file.write(tab)
+
+
+args_parser = argparse.ArgumentParser()
+args_parser.add_argument('folder', action='store', help='directory for saved tabs')
+args = args_parser.parse_args()
+
+folder = args.folder + '/'
+if not os.path.exists(folder):
+    os.makedirs(folder)
+
+answer = input()
+while not answer == 'exit':
+    if is_url_correct(answer, folder):
+        save_tab(answer, folder)
+        print_tab(answer, folder)
+    else:
+        print('Error: Incorrect URL\n')
+    answer = input()
