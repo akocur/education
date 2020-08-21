@@ -1,7 +1,8 @@
 import argparse
 import os
-from collections import deque
 import requests
+from collections import deque
+from bs4 import BeautifulSoup
 
 
 def get_short_url(url):
@@ -23,7 +24,7 @@ def is_url_exist(url):
 
 
 def print_tab(url, folder):
-    with open(folder + get_short_url(url)) as tab:
+    with open(folder + get_short_url(url), encoding='utf-8') as tab:
         print(tab.read())
 
 
@@ -32,9 +33,12 @@ def save_tab(url, folder):
         return
     if not url.startswith('https://'):
         url = 'https://' + url
-    tab = requests.get(url)
-    with open(folder + get_short_url(url), 'w') as file:
-        file.write(tab.text)
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    body = soup.find('body')
+    text = [line + '\n' for line in [line_dirty.strip() for line_dirty in body.text.splitlines()] if line]
+    with open(folder + get_short_url(url), 'w', encoding='utf-8') as file:
+        file.writelines(text)
 
 
 args_parser = argparse.ArgumentParser()
