@@ -2,11 +2,14 @@ import argparse
 import os
 import requests
 from collections import deque
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString
+import colorama
 
 
 def get_short_url(url):
     url = url.replace('https://', '')
+    url = url.replace('http://', '')
+    url = url.replace('/', '_')
     dot_position = url.rfind('.')
     return url if dot_position == -1 else url[:dot_position]
 
@@ -18,28 +21,34 @@ def is_url_correct(url, folder):
 def is_url_exist(url):
     if url.rfind('.') == -1:
         return False
-    if not url.startswith('https://'):
+    if not (url.startswith('https://') or url.startswith('http://')):
         url = 'https://' + url
     return True if requests.get(url) else False
 
 
 def print_tab(url, folder):
     with open(folder + get_short_url(url), encoding='utf-8') as tab:
-        print(tab.read())
+        for line in tab.readlines():
+            print(line, end='')
 
 
 def save_tab(url, folder):
     if not is_url_exist(url):
         return
-    if not url.startswith('https://'):
+    if not (url.startswith('https://') or url.startswith('http://')):
         url = 'https://' + url
-    response = requests.get(url)
-    soup = BeautifulSoup(response.content, 'html.parser')
+    tab = requests.get(url)
+    soup = BeautifulSoup(tab.content, 'html.parser')
     body = soup.find('body')
-    text = [line + '\n' for line in [line_dirty.strip() for line_dirty in body.text.splitlines()] if line]
     with open(folder + get_short_url(url), 'w', encoding='utf-8') as file:
-        file.writelines(text)
+        for tag in body.find_all(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'ul', 'ol', 'li']):
+            text = tag.get_text()
+            if text:
+                blue_text = '\033[34m' if tag.attrs.get('href', None) else ''
+                file.write(blue_text + text + '\n')
 
+
+colorama.init(autoreset=True)
 
 args_parser = argparse.ArgumentParser()
 args_parser.add_argument('folder', action='store', help='directory for saved tabs')
