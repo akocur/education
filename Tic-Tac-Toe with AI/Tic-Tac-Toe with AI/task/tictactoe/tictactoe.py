@@ -8,7 +8,7 @@ class TicTacToe:
     player_o = 'O'
     empty_cell = '_'
 
-    def __init__(self, cells=None, level='easy', user=None):
+    def __init__(self, cells=None, level='easy', user1=None, user2=None):
         if cells is None:
             cells = TicTacToe.empty_cell * TicTacToe.n_rows ** 2
         else:
@@ -19,7 +19,8 @@ class TicTacToe:
         self.state = None
         self.set_state()
         self.level = level
-        self.user = TicTacToe.player_x if user is None else user
+        self.user1 = user1
+        self.user2 = user2
 
     def __str__(self):
         return '-' * TicTacToe.n_rows ** 2 + '\n| '\
@@ -57,7 +58,7 @@ class TicTacToe:
 
         while self.state == 'Game not finished':
             print(self)
-            if self.current_player == self.user:
+            if self.current_player in (self.user1, self.user2):
                 coordinates = input('Enter the coordinates: > ').strip().split()
                 while not self.is_correct_coordinates(coordinates):
                     coordinates = input('Enter the coordinates: > ').strip().split()
@@ -85,8 +86,19 @@ class TicTacToe:
 
 
 def main():
-    game = TicTacToe()
-    game.play()
+    answer = input('Input command: > ')
+    while answer != 'exit':
+        command = answer.split()
+        if len(command) != 3 or command[0] != 'start' or command[1] not in ('easy', 'user')\
+                or command[2] not in ('easy', 'user'):
+            print('Bad parameters!')
+            answer = input('Input command: > ')
+            continue
+        param = {'user1': None if command[1] == 'easy' else TicTacToe.player_x,
+                 'user2': None if command[2] == 'easy' else TicTacToe.player_o}
+        game = TicTacToe(**param)
+        game.play()
+        answer = input('\nInput command: > ')
 
 
 if __name__ == '__main__':
