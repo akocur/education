@@ -1,4 +1,5 @@
 from math import sqrt
+import random
 
 
 class TicTacToe:
@@ -7,7 +8,7 @@ class TicTacToe:
     player_o = 'O'
     empty_cell = '_'
 
-    def __init__(self, cells=None):
+    def __init__(self, cells=None, level='easy', user=None):
         if cells is None:
             cells = TicTacToe.empty_cell * TicTacToe.n_rows ** 2
         else:
@@ -17,11 +18,20 @@ class TicTacToe:
                                                     > cells.count(TicTacToe.player_o) else TicTacToe.player_x
         self.state = None
         self.set_state()
+        self.level = level
+        self.user = TicTacToe.player_x if user is None else user
 
     def __str__(self):
         return '-' * TicTacToe.n_rows ** 2 + '\n| '\
                + ' |\n| '.join([' '.join(self.cells[i]) for i in range(TicTacToe.n_rows)]) + ' |\n'\
                + '-' * TicTacToe.n_rows ** 2
+
+    def get_computer_coordinates(self):
+        free_cells = [(r, c) for r in range(TicTacToe.n_rows)
+                      for c in range(TicTacToe.n_rows) if self.cells[r][c] == TicTacToe.empty_cell]
+        if self.level == 'easy':
+            return random.choice(free_cells)
+        return free_cells[0]
 
     def is_correct_coordinates(self, coordinates):
         if not all(x.isdigit() for x in coordinates):
@@ -44,13 +54,19 @@ class TicTacToe:
         self.current_player = TicTacToe.player_x if self.current_player == TicTacToe.player_o else TicTacToe.player_o
 
     def play(self):
-        # while self.state == 'Game not finished':
-        print(self)
-        coordinates = input('Enter the coordinates: > ').strip().split()
-        while not self.is_correct_coordinates(coordinates):
-            coordinates = input('Enter the coordinates: > ').strip().split()
-        self.make_move(len(self.cells) - int(coordinates[1]), int(coordinates[0]) - 1)
-        self.set_state()
+
+        while self.state == 'Game not finished':
+            print(self)
+            if self.current_player == self.user:
+                coordinates = input('Enter the coordinates: > ').strip().split()
+                while not self.is_correct_coordinates(coordinates):
+                    coordinates = input('Enter the coordinates: > ').strip().split()
+                coordinates = len(self.cells) - int(coordinates[1]), int(coordinates[0]) - 1
+            else:
+                print(f'Making move level "{self.level}"')
+                coordinates = self.get_computer_coordinates()
+            self.make_move(coordinates[0], coordinates[1])
+            self.set_state()
         print(self, self.state, sep='\n')
 
     def set_state(self):
@@ -69,7 +85,7 @@ class TicTacToe:
 
 
 def main():
-    game = TicTacToe(input('Enter cells: > '))
+    game = TicTacToe()
     game.play()
 
 
