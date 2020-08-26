@@ -2,25 +2,33 @@ from math import sqrt
 import random
 
 
+class Player:
+    def __init__(self, hero, level='user'):
+        self.hero = hero
+        self.level = level
+        self.is_computer = level in ('easy', 'medium', 'hard')
+
+
 class TicTacToe:
     n_rows = 3
-    player_x = 'X'
-    player_o = 'O'
+    X = 'X'
+    O = 'O'
     empty_cell = '_'
 
-    def __init__(self, cells=None, level='easy', user1=None, user2=None):
+    def __init__(self, player_1, player_2, cells=None):
+        self.player_1 = player_1
+        self.player_2 = player_2
         if cells is None:
             cells = TicTacToe.empty_cell * TicTacToe.n_rows ** 2
         else:
             TicTacToe.n_rows = int(sqrt(len(cells)))
         self.cells = [list(cells[i:i + TicTacToe.n_rows]) for i in range(0, TicTacToe.n_rows ** 2, TicTacToe.n_rows)]
-        self.current_player = TicTacToe.player_o if cells.count(TicTacToe.player_x) \
-                                                    > cells.count(TicTacToe.player_o) else TicTacToe.player_x
+        if cells.count(player_1.hero) == cells.count(player_2.hero):
+            self.current_player = player_1 if player_1.hero == TicTacToe.X else player_2
+        else:
+            self.current_player = player_2 if cells.count(player_1.hero) > cells.count(player_2.hero) else player_1
         self.state = None
         self.set_state()
-        self.level = level
-        self.user1 = user1
-        self.user2 = user2
 
     def __str__(self):
         return '-' * TicTacToe.n_rows ** 2 + '\n| '\
@@ -30,7 +38,22 @@ class TicTacToe:
     def get_computer_coordinates(self):
         free_cells = [(r, c) for r in range(TicTacToe.n_rows)
                       for c in range(TicTacToe.n_rows) if self.cells[r][c] == TicTacToe.empty_cell]
-        if self.level == 'easy':
+        if self.current_player.level == 'easy':
+            return random.choice(free_cells)
+        if self.current_player.level == 'medium':
+            current_player_winning_coordinates = []
+            opponent = self.player_1 if self.current_player == self.player_2 else self.player_2
+            opponent_winning_coordinates = []
+            for r in range(TicTacToe.n_rows):
+                if self.cells[r].count(TicTacToe.empty_cell) == 1:
+                    if self.cells[r].count(self.current_player.hero) == len(self.cells[r]) - 1:
+                        current_player_winning_coordinates.append((r, self.cells[r].index(TicTacToe.empty_cell)))
+                    if self.cells[r].count(opponent.hero) == len(self.cells[r]) - 1:
+                        opponent_winning_coordinates.append((r, self.cells[r].index(TicTacToe.empty_cell)))
+            if current_player_winning_coordinates:
+                return current_player_winning_coordinates[0]
+            if opponent_winning_coordinates:
+                return opponent_winning_coordinates[0]
             return random.choice(free_cells)
         return free_cells[0]
 
@@ -51,21 +74,20 @@ class TicTacToe:
         return True
 
     def make_move(self, row, column):
-        self.cells[row][column] = self.current_player
-        self.current_player = TicTacToe.player_x if self.current_player == TicTacToe.player_o else TicTacToe.player_o
+        self.cells[row][column] = self.current_player.hero
+        self.current_player = self.player_1 if self.current_player == self.player_2 else self.player_2
 
     def play(self):
-
         while self.state == 'Game not finished':
             print(self)
-            if self.current_player in (self.user1, self.user2):
+            if self.current_player.is_computer:
+                print(f'Making move level "{self.current_player.level}"')
+                coordinates = self.get_computer_coordinates()
+            else:
                 coordinates = input('Enter the coordinates: > ').strip().split()
                 while not self.is_correct_coordinates(coordinates):
                     coordinates = input('Enter the coordinates: > ').strip().split()
                 coordinates = len(self.cells) - int(coordinates[1]), int(coordinates[0]) - 1
-            else:
-                print(f'Making move level "{self.level}"')
-                coordinates = self.get_computer_coordinates()
             self.make_move(coordinates[0], coordinates[1])
             self.set_state()
         print(self, self.state, sep='\n')
@@ -74,10 +96,10 @@ class TicTacToe:
         columns = [[self.cells[r][c] for r in range(TicTacToe.n_rows)] for c in range(TicTacToe.n_rows)]
         diagonals = [[self.cells[d][d] for d in range(TicTacToe.n_rows)],
                      [self.cells[d][TicTacToe.n_rows - d - 1] for d in range(TicTacToe.n_rows)]]
-        for player in [TicTacToe.player_x, TicTacToe.player_o]:
+        for hero in [self.player_1.hero, self.player_2.hero]:
             for collection in [self.cells, columns, diagonals]:
-                if any(c.count(player) == TicTacToe.n_rows for c in collection):
-                    self.state = f'{player} wins'
+                if any(c.count(hero) == TicTacToe.n_rows for c in collection):
+                    self.state = f'{hero} wins'
                     return
         if any(TicTacToe.empty_cell in r for r in self.cells):
             self.state = 'Game not finished'
@@ -87,16 +109,14 @@ class TicTacToe:
 
 def main():
     answer = input('Input command: > ')
+    levels = ('easy', 'medium', 'hard', 'user')
     while answer != 'exit':
         command = answer.split()
-        if len(command) != 3 or command[0] != 'start' or command[1] not in ('easy', 'user')\
-                or command[2] not in ('easy', 'user'):
+        if len(command) != 3 or command[0] != 'start' or command[1] not in levels or command[2] not in levels:
             print('Bad parameters!')
             answer = input('Input command: > ')
             continue
-        param = {'user1': None if command[1] == 'easy' else TicTacToe.player_x,
-                 'user2': None if command[2] == 'easy' else TicTacToe.player_o}
-        game = TicTacToe(**param)
+        game = TicTacToe(Player('X', command[1]), Player('O', command[2]))
         game.play()
         answer = input('\nInput command: > ')
 
