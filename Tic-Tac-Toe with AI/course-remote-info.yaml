@@ -16,8 +16,6 @@ stages:
   step: 7443
 topics:
   0:
-  - title: Boolean logic
-    theory_id: 6025
   - title: Introduction to Python
     theory_id: 5204
   - title: Overview of the basic program
@@ -86,6 +84,8 @@ topics:
     theory_id: 6052
   - title: Any and all
     theory_id: 7800
+  - title: Boolean logic
+    theory_id: 6025
   1:
   - title: IDE
     theory_id: 3805

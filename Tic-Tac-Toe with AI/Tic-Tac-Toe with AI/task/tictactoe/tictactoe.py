@@ -1,6 +1,6 @@
 from math import sqrt
 import random
-
+import sys
 
 class Player:
     def __init__(self, hero, level='user'):
@@ -36,13 +36,12 @@ class TicTacToe:
                + '-' * TicTacToe.n_rows ** 2
 
     def get_computer_coordinates(self):
-        free_cells = [(r, c) for r in range(TicTacToe.n_rows)
-                      for c in range(TicTacToe.n_rows) if self.cells[r][c] == TicTacToe.empty_cell]
+        free_cells = self.get_free_cells()
         if self.current_player.level == 'easy':
             return random.choice(free_cells)
         if self.current_player.level == 'medium':
             current_player_winning_coordinates = []
-            opponent = self.player_1 if self.current_player == self.player_2 else self.player_2
+            opponent = self.get_opponent()
             opponent_winning_coordinates = []
             for r in range(TicTacToe.n_rows):
                 if self.cells[r].count(TicTacToe.empty_cell) == 1:
@@ -55,7 +54,28 @@ class TicTacToe:
             if opponent_winning_coordinates:
                 return opponent_winning_coordinates[0]
             return random.choice(free_cells)
+        if self.current_player.level == 'hard':
+            if len(free_cells) == TicTacToe.n_rows ** 2:
+                return TicTacToe.n_rows // 2, TicTacToe.n_rows // 2
+            current_player = self.current_player
+            state = self.state
+            best_score = -sys.maxsize
+            for r, c in free_cells:
+                self.make_move(r, c)
+                self.set_state()
+                score = self.min_max(current_player)
+                if best_score < score:
+                    best_score = score
+                    row, column = r, c
+                self.cells[r][c] = TicTacToe.empty_cell
+                self.current_player = current_player
+                self.state = state
+            return row, column
         return free_cells[0]
+
+    def get_free_cells(self):
+        return [(r, c) for r in range(TicTacToe.n_rows)
+                for c in range(TicTacToe.n_rows) if self.cells[r][c] == TicTacToe.empty_cell]
 
     def is_correct_coordinates(self, coordinates):
         if not all(x.isdigit() for x in coordinates):
@@ -75,7 +95,33 @@ class TicTacToe:
 
     def make_move(self, row, column):
         self.cells[row][column] = self.current_player.hero
-        self.current_player = self.player_1 if self.current_player == self.player_2 else self.player_2
+        self.current_player = self.get_opponent()
+
+    def min_max(self, ai):
+        opponent = self.player_1 if ai == self.player_2 else self.player_2
+        if self.state == 'Draw':
+            return 0
+        if self.state == f'{ai.hero} wins':
+            return 1
+        if self.state == f'{opponent.hero} wins':
+            return -1
+
+        score = -sys.maxsize if self.current_player == ai else sys.maxsize
+        for r, c in self.get_free_cells():
+            current_player = self.current_player
+            self.make_move(r, c)
+            self.set_state()
+            if current_player == ai:
+                score = max(score, self.min_max(ai))
+            else:
+                score = min(score, self.min_max(ai))
+            self.cells[r][c] = TicTacToe.empty_cell
+            self.current_player = current_player
+            self.set_state()
+        return score
+
+    def get_opponent(self):
+        return self.player_1 if self.current_player == self.player_2 else self.player_2
 
     def play(self):
         while self.state == 'Game not finished':
