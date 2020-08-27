@@ -2,6 +2,7 @@ from math import sqrt
 import random
 import sys
 
+
 class Player:
     def __init__(self, hero, level='user'):
         self.hero = hero
