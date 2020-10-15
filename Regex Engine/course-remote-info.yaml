@@ -9,7 +9,7 @@ stages:
   is_completed: true
 - id: 620
   step: 10240
-  is_completed: false
+  is_completed: true
 - id: 621
   step: 10241
   is_completed: false
@@ -114,8 +114,10 @@ topics:
     theory_id: 6031
   - title: Loop control statements
     theory_id: 6302
-  - title: Operations with dictionary
+  - title: Dictionary methods
     theory_id: 9008
+  - title: Operations with dictionary
+    theory_id: 11096
   - title: Default arguments
     theory_id: 10295
   - title: Args
