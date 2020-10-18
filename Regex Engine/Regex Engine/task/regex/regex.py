@@ -6,6 +6,8 @@ def main():
 
 
 def is_matched(regex, str_):
+    if regex and regex[0] == '^':
+        return is_equal(regex[1:], str_)
     for i in range(len(str_)):
         if is_equal(regex, str_[i:]):
             return True
@@ -17,7 +19,7 @@ def is_equal(regex, str_):
 
 
 def is_contains(regex, input_str):
-    return not regex or regex == '.' or regex == input_str
+    return not regex or regex == '.' or regex == input_str or (regex == '$' and not input_str)
 
 
 if __name__ == '__main__':
