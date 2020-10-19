@@ -112,6 +112,13 @@ files:
     if __name__ == '__main__':
         RegexTest('regex.regex').run_tests()
   learner_created: false
+- name: regex/test_regex.py
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/114/stages/623/implement
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations! Continue on <a href="https://hyperskill.org/projects/114/stages/623/implement">JetBrains
+    Academy</a>
+  time: Mon, 19 Oct 2020 18:31:41 UTC
 record: -1
