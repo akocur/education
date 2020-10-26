@@ -15,9 +15,9 @@ To solve this problem, the regex notation has a so called escape sequence: if a 
 
 <h2>Examples</h2>
 
-<pre><code class="language-no-highlight">Input:      '\\.$|end.'              Output: True
-Input:     '3\\+3|3+3=6'             Output: True
-Input:       '\\?|Is this working?'  Output: True
-Input:      '\\\\|\\'                Output: True
-Input: 'colou\\?r|color'             Output: False
-Input: 'colou\\?r|colour'            Output: False</code></pre>
+<pre><code class="language-no-highlight">Input:      '\.$|end.'              Output: True
+Input:     '3\+3|3+3=6'             Output: True
+Input:       '\?|Is this working?'  Output: True
+Input:       '\\|\'                 Output: True
+Input: 'colou\?r|color'             Output: False
+Input: 'colou\?r|colour'            Output: False</code></pre>

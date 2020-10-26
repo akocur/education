@@ -24,12 +24,18 @@ def is_equal(regex, str_):
         if operator == '+':
             return 1, len(string_) + 1
 
+    def is_escape(current_char, prev_char):
+        return current_char == '\\' and prev_char != '\\'
+
     equals = True
     i_str = 0
     prev_r = None
     for i_regex, r in enumerate(regex):
+        if is_escape(r, prev_r):
+            prev_r = r
+            continue
         s = str_[i_str] if i_str < len(str_) else ''
-        if r in '?*+':
+        if r in '?*+' and prev_r != '\\':
             residual_str = str_[i_str - 1:] if equals else str_[i_str:]
             residual_regex = regex[i_regex + 1:]
             for i in range(*get_range_for_repetition_operators(r, residual_str)):
